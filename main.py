@@ -7,9 +7,9 @@ Original file is located at
     https://colab.research.google.com/drive/13Xum8A7tG0dwgGo075OUd9ssENFO2KkY
 """
 
+from numpy.lib.function_base import percentile
+import streamlit as st
 import pandas as pd    # To work with tables
-import seaborn as sns    # For advanced plots
-from matplotlib import pyplot as plt # For graphs
 
 data = pd.read_csv("https://gist.githubusercontent.com/cdespiney/7a5f499da223d34755e82256e5805161/raw/1e30f972507f543adcc2f5683fed80ac86f1ff4b/heart.csv")
 
@@ -19,20 +19,8 @@ data.head(5)
 healthy = data[data['target'] == 0]
 healthy.head()
 
-sns.lineplot(data=healthy, x="Age", y="Cholesterol", hue="target")
-
 sick = data[data['target'] == 1]
 sick.head()
-
-sns.lineplot(data=sick, x="Age", y="Cholesterol", hue="target")
-
-sns.lineplot(data=data, x="Age", y="Cholesterol", hue="target")
-
-sns.barplot(data=data, y="Resting Blood Pressure", x="target", hue="Chest Pain")
-
-sns.lmplot(data=data, y="Max heart rate", x="Myocardiac indicator", hue="target")
-
-sns.lineplot(data=data, x="Fluoroscopy", y="Max heart rate", hue="target")
 
 from sklearn.linear_model import LinearRegression
 
@@ -63,9 +51,6 @@ model_All = lm.fit(X, Y)
 
 test_set['predictions'] = model_All.predict(test_set[predictor])
 
-plt.figure(figsize=(12, 6))
-ax = sns.regplot(y='target', x='predictions', data=test_set)
-
 predictors = ['Cholesterol', 'Max heart rate', 'Myocardiac indicator']
 X = train_set[predictors]
 Y = train_set.target
@@ -79,5 +64,16 @@ print(lm.coef_)
 
 print(list(zip(predictors, lm.coef_)))
 
-new_X = [[200, 160, 3]]
-print(lm.predict(new_X))
+
+st.title('Machine Learning - Heart Disease Prediction')
+
+cholesterol = st.slider('Cholesterol', 100, 400, 250)
+max_heart_rate = st.slider('Max Heart Rate', 50, 300, 140)
+myocardiac = st.slider('Myocardiac indicator', 0.00, 4.00, 2.00)
+
+new_X = [[cholesterol, max_heart_rate, myocardiac]]
+prediction = lm.predict(new_X)
+if prediction >= 1:
+    st.write('High chance of heart disease', prediction)
+else:
+    st.write('Low chance of heart disease', prediction)
