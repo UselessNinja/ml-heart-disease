@@ -73,7 +73,7 @@ myocardiac = st.slider('Myocardiac indicator', 0.00, 4.00, 2.00)
 
 new_X = [[cholesterol, max_heart_rate, myocardiac]]
 prediction = lm.predict(new_X)
-if prediction >= 1:
+if prediction >= 0.65:
     st.write('High chance of heart disease', prediction)
 else:
     st.write('Low chance of heart disease', prediction)
